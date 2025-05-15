@@ -6,6 +6,9 @@ use arrow::array::{
     TimestampNanosecondArray, UInt8Array, UInt16Array, UInt32Array,
 };
 use arrow::datatypes::{DataType, Fields};
+use opentelemetry_proto::tonic::collector::logs::v1::ExportLogsServiceRequest;
+use opentelemetry_proto::tonic::common::v1::any_value::Value;
+use opentelemetry_proto::tonic::common::v1::AnyValue;
 use snafu::{OptionExt, ResultExt, ensure};
 
 use crate::arrays::{
@@ -16,9 +19,6 @@ use crate::error::{self, Error, Result};
 use crate::otlp::common::{ResourceArrays, ScopeArrays};
 use crate::otlp::logs::related_data::RelatedData;
 use crate::otlp::metrics::AppendAndGet;
-use crate::proto::opentelemetry::collector::logs::v1::ExportLogsServiceRequest;
-use crate::proto::opentelemetry::common::v1::AnyValue;
-use crate::proto::opentelemetry::common::v1::any_value::Value;
 use crate::schema::consts;
 
 use super::attributes::{cbor, store::AttributeValueType};

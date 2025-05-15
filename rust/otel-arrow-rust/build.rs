@@ -22,7 +22,7 @@ fn main() {
     generate_otap_protos(out_dir, &base);
 
     // Generate OTLP protos
-    generate_otlp_protos(out_dir, &base);
+    // generate_otlp_protos(out_dir, &base);
 }
 
 #[allow(unused_results)]
@@ -58,6 +58,7 @@ fn generate_otap_protos(out_dir: &Path, base: &str) {
         .expect("Failed to compile OTAP protos.");
 }
 
+#[allow(dead_code)]
 fn generate_otlp_protos(out_dir: &Path, base: &str) {
     // Configure the builder for OTLP protos
     let builder = tonic_build::configure()

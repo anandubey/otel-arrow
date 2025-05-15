@@ -5,10 +5,10 @@ use crate::arrays::{
     NullableArrayAccessor, StringArrayAccessor, StructColumnAccessor, get_required_array,
 };
 use crate::error;
-use crate::proto::opentelemetry::common::v1::InstrumentationScope;
 use crate::schema::consts;
 use arrow::array::{Array, RecordBatch, StructArray, UInt16Array, UInt32Array};
 use arrow::datatypes::{DataType, Field, Fields};
+use opentelemetry_proto::tonic::common::v1::InstrumentationScope;
 use snafu::OptionExt;
 use std::sync::LazyLock;
 

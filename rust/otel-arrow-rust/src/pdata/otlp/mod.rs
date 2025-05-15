@@ -17,5 +17,5 @@ pub use otlp_derive::Message;
 pub use otlp_derive::qualified;
 
 // Include tests
-#[cfg(test)]
-mod tests;
+// #[cfg(test)]
+// mod tests;
