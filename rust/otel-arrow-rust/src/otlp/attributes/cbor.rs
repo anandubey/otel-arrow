@@ -2,7 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::error::{self, Error, Result};
-use opentelemetry_proto::tonic::common::v1::{any_value::Value, AnyValue, ArrayValue, KeyValue, KeyValueList};
+use opentelemetry_proto::tonic::common::v1::{
+    AnyValue, ArrayValue, KeyValue, KeyValueList, any_value::Value,
+};
 use snafu::ResultExt;
 
 /// Decode bytes from a serialized attribute into pcommon value.
@@ -81,7 +83,10 @@ fn from_ciborium_tup_val(
         .map(|(k, v)| {
             if let ciborium::Value::Text(key) = k {
                 match MaybeValue::try_from(v) {
-                    Ok(val) => Ok(KeyValue{key, value: Some(AnyValue { value: val.into() })}),
+                    Ok(val) => Ok(KeyValue {
+                        key,
+                        value: Some(AnyValue { value: val.into() }),
+                    }),
                     Err(e) => Err(e),
                 }
             } else {
@@ -90,6 +95,6 @@ fn from_ciborium_tup_val(
         })
         .collect();
 
-    Ok(Value::KvlistValue(KeyValueList{values: kvs?}))
+    Ok(Value::KvlistValue(KeyValueList { values: kvs? }))
 }
 // }

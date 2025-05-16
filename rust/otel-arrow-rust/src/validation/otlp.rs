@@ -25,14 +25,26 @@ use super::tcp_stream::ShutdownableTcpListenerStream;
 
 use super::error;
 use opentelemetry_proto::tonic::collector::logs::v1::logs_service_client::LogsServiceClient;
-use opentelemetry_proto::tonic::collector::logs::v1::logs_service_server::{LogsService, LogsServiceServer};
-use opentelemetry_proto::tonic::collector::logs::v1::{ExportLogsServiceRequest, ExportLogsServiceResponse};
+use opentelemetry_proto::tonic::collector::logs::v1::logs_service_server::{
+    LogsService, LogsServiceServer,
+};
+use opentelemetry_proto::tonic::collector::logs::v1::{
+    ExportLogsServiceRequest, ExportLogsServiceResponse,
+};
 use opentelemetry_proto::tonic::collector::metrics::v1::metrics_service_client::MetricsServiceClient;
-use opentelemetry_proto::tonic::collector::metrics::v1::metrics_service_server::{MetricsService, MetricsServiceServer};
-use opentelemetry_proto::tonic::collector::metrics::v1::{ExportMetricsServiceRequest, ExportMetricsServiceResponse};
+use opentelemetry_proto::tonic::collector::metrics::v1::metrics_service_server::{
+    MetricsService, MetricsServiceServer,
+};
+use opentelemetry_proto::tonic::collector::metrics::v1::{
+    ExportMetricsServiceRequest, ExportMetricsServiceResponse,
+};
 use opentelemetry_proto::tonic::collector::trace::v1::trace_service_client::TraceServiceClient;
-use opentelemetry_proto::tonic::collector::trace::v1::trace_service_server::{TraceService, TraceServiceServer};
-use opentelemetry_proto::tonic::collector::trace::v1::{ExportTraceServiceRequest, ExportTraceServiceResponse};
+use opentelemetry_proto::tonic::collector::trace::v1::trace_service_server::{
+    TraceService, TraceServiceServer,
+};
+use opentelemetry_proto::tonic::collector::trace::v1::{
+    ExportTraceServiceRequest, ExportTraceServiceResponse,
+};
 use snafu::ResultExt;
 
 use tonic::transport::{Channel, Server};

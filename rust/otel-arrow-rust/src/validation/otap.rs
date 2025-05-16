@@ -8,19 +8,19 @@
 
 use crate::{
     Consumer,
-    proto::opentelemetry::{
-        arrow::v1::{
-            BatchArrowRecords, BatchStatus, StatusCode,
-            arrow_logs_service_server::{ArrowLogsService, ArrowLogsServiceServer},
-            arrow_metrics_service_server::{ArrowMetricsService, ArrowMetricsServiceServer},
-        }
+    proto::opentelemetry::arrow::v1::{
+        BatchArrowRecords, BatchStatus, StatusCode,
+        arrow_logs_service_server::{ArrowLogsService, ArrowLogsServiceServer},
+        arrow_metrics_service_server::{ArrowMetricsService, ArrowMetricsServiceServer},
     },
 };
 
 use super::service_type::{ServiceOutputType, TestReceiver};
 use super::tcp_stream::ShutdownableTcpListenerStream;
+use opentelemetry_proto::tonic::collector::{
+    logs::v1::ExportLogsServiceRequest, metrics::v1::ExportMetricsServiceRequest,
+};
 use std::pin::Pin;
-use opentelemetry_proto::tonic::collector::{logs::v1::ExportLogsServiceRequest, metrics::v1::ExportMetricsServiceRequest};
 use tokio_stream::Stream;
 use tonic::transport::Server;
 use tonic::{Request, Response, Status};
