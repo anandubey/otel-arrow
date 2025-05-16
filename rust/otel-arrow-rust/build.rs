@@ -53,7 +53,7 @@ fn generate_otap_protos(out_dir: &Path, base: &str) {
         .compile_protos_with_config(
             prost_cfg(),
             &["experimental/arrow/v1/arrow_service.proto"],
-            &[format!("{}/../../proto/opentelemetry/proto/", base)],
+            // &[format!("{}/../../proto/opentelemetry/proto/", base)],
         )
         .expect("Failed to compile OTAP protos.");
 }
