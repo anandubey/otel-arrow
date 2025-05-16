@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::error::{self, Error, Result};
-use crate::proto::opentelemetry::common::v1::any_value::Value;
-use crate::proto::opentelemetry::common::v1::{AnyValue, ArrayValue, KeyValue, KeyValueList};
+use opentelemetry_proto::tonic::common::v1::{
+    AnyValue, ArrayValue, KeyValue, KeyValueList, any_value::Value,
+};
 use snafu::ResultExt;
 
 /// Decode bytes from a serialized attribute into pcommon value.
@@ -42,8 +43,8 @@ impl TryFrom<ciborium::Value> for MaybeValue {
                     .try_into()
                     .context(error::InvalidSerializedIntAttributeValueSnafu)?,
             )),
-            ciborium::Value::Array(array_vals) => Some(Value::try_from(array_vals)?),
-            ciborium::Value::Map(kv_vals) => Some(Value::try_from(kv_vals)?),
+            ciborium::Value::Array(array_vals) => Some(from_ciborium_val(array_vals)?),
+            ciborium::Value::Map(kv_vals) => Some(from_ciborium_tup_val(kv_vals)?),
             other => {
                 return error::UnsupportedSerializedAttributeValueSnafu { actual: other }.fail();
             }
@@ -54,43 +55,46 @@ impl TryFrom<ciborium::Value> for MaybeValue {
 }
 
 /// Converts an array of cbor values into the ArrayValue variant of Value
-impl TryFrom<Vec<ciborium::Value>> for Value {
-    type Error = Error;
+// impl TryFrom<Vec<ciborium::Value>> for Value {
+//     type Error = Error;
 
-    fn try_from(values: Vec<ciborium::Value>) -> std::result::Result<Self, Self::Error> {
-        let vals: Result<Vec<_>> = values
-            .into_iter()
-            .map(|element| match MaybeValue::try_from(element) {
-                Ok(val) => Ok(AnyValue { value: val.into() }),
-                Err(e) => Err(e),
-            })
-            .collect();
+fn from_ciborium_val(values: Vec<ciborium::Value>) -> std::result::Result<Value, Error> {
+    let vals: Result<Vec<_>> = values
+        .into_iter()
+        .map(|element| match MaybeValue::try_from(element) {
+            Ok(val) => Ok(AnyValue { value: val.into() }),
+            Err(e) => Err(e),
+        })
+        .collect();
 
-        Ok(Value::ArrayValue(ArrayValue { values: vals? }))
-    }
+    Ok(Value::ArrayValue(ArrayValue { values: vals? }))
 }
+// }
 
 /// Converts the array of cbor kv pairs into the KvlistValue variant of Value
-impl TryFrom<Vec<(ciborium::Value, ciborium::Value)>> for Value {
-    type Error = Error;
+// impl TryFrom<Vec<(ciborium::Value, ciborium::Value)>> for Value {
+//     type Error = Error;
 
-    fn try_from(
-        kv_values: Vec<(ciborium::Value, ciborium::Value)>,
-    ) -> std::result::Result<Self, Self::Error> {
-        let kvs: Result<Vec<_>> = kv_values
-            .into_iter()
-            .map(|(k, v)| {
-                if let ciborium::Value::Text(key) = k {
-                    match MaybeValue::try_from(v) {
-                        Ok(val) => Ok(KeyValue::new(key, AnyValue { value: val.into() })),
-                        Err(e) => Err(e),
-                    }
-                } else {
-                    error::InvalidSerializedMapKeyTypeSnafu { actual: k }.fail()
+fn from_ciborium_tup_val(
+    kv_values: Vec<(ciborium::Value, ciborium::Value)>,
+) -> std::result::Result<Value, Error> {
+    let kvs: Result<Vec<_>> = kv_values
+        .into_iter()
+        .map(|(k, v)| {
+            if let ciborium::Value::Text(key) = k {
+                match MaybeValue::try_from(v) {
+                    Ok(val) => Ok(KeyValue {
+                        key,
+                        value: Some(AnyValue { value: val.into() }),
+                    }),
+                    Err(e) => Err(e),
                 }
-            })
-            .collect();
+            } else {
+                error::InvalidSerializedMapKeyTypeSnafu { actual: k }.fail()
+            }
+        })
+        .collect();
 
-        Ok(Value::KvlistValue(KeyValueList::new(kvs?)))
-    }
+    Ok(Value::KvlistValue(KeyValueList { values: kvs? }))
 }
+// }

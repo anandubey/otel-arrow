@@ -17,11 +17,11 @@ use crate::arrays::{
 use crate::error;
 use crate::otlp::attributes::store::Attribute32Store;
 use crate::otlp::metrics::AppendAndGet;
-use crate::proto::opentelemetry::metrics::v1::Exemplar;
-use crate::proto::opentelemetry::metrics::v1::exemplar::Value;
 use crate::schema::consts;
 use arrow::array::RecordBatch;
 use num_enum::TryFromPrimitive;
+use opentelemetry_proto::tonic::metrics::v1::Exemplar;
+use opentelemetry_proto::tonic::metrics::v1::exemplar::Value;
 use snafu::ensure;
 use std::collections::HashMap;
 
@@ -74,15 +74,21 @@ impl ExemplarsStore {
             current_exemplar.time_unix_nano = time_unix_nano as u64;
 
             let span_id_bytes = span_id_arr.value_at_or_default(idx);
-            ensure!(span_id_bytes.len() == 8, error::InvalidSpanIdSnafu {
-                message: format!("rb: {:?}", rb),
-            });
+            ensure!(
+                span_id_bytes.len() == 8,
+                error::InvalidSpanIdSnafu {
+                    message: format!("rb: {:?}", rb),
+                }
+            );
             current_exemplar.span_id = span_id_bytes;
 
             let trace_id_bytes = trace_id_arr.value_at_or_default(idx);
-            ensure!(trace_id_bytes.len() == 16, error::InvalidTraceIdSnafu {
-                message: format!("rb: {:?}", rb),
-            });
+            ensure!(
+                trace_id_bytes.len() == 16,
+                error::InvalidTraceIdSnafu {
+                    message: format!("rb: {:?}", rb),
+                }
+            );
             current_exemplar.trace_id = trace_id_bytes;
 
             match (int_value, double_value) {

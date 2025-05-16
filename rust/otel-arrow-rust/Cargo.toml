@@ -33,8 +33,15 @@ rand = "0.9"
 serde = { version = "1.0", features = ["derive"] }
 snafu = { version = "0.8" }
 prost = "0.13"
-tonic = "0.13"
+tonic = "0.12.3"
 tokio = { version = "1.43.0", features = ["rt", "time", "net", "io-util", "sync", "macros", "rt-multi-thread", "process"] }
+opentelemetry-proto = { version = "0.26", features = [
+    "gen-tonic",
+    "with-serde",
+    "logs",
+    "metrics",
+    "trace",
+] }
 
 [[bench]]
 name = "otlp_bytes"
@@ -47,7 +54,7 @@ tokio-stream = "0.1.17"
 criterion = { version = "0.5" }
 
 [build-dependencies]
-tonic-build = "0.13"
+tonic-build = "0.12.3"
 prost-build = "0.13"
 otlp-model = { path = "./src/pdata/otlp/model" }
 

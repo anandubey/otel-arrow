@@ -10,10 +10,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::proto::opentelemetry::metrics::v1::{
+use std::collections::HashMap;
+
+use opentelemetry_proto::tonic::metrics::v1::{
     ExponentialHistogramDataPoint, HistogramDataPoint, NumberDataPoint, SummaryDataPoint,
 };
-use std::collections::HashMap;
 
 #[derive(Default)]
 pub struct DataPointStore<T> {

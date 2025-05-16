@@ -6,6 +6,9 @@ use arrow::array::{
     TimestampNanosecondArray, UInt8Array, UInt16Array, UInt32Array,
 };
 use arrow::datatypes::{DataType, Fields};
+use opentelemetry_proto::tonic::collector::logs::v1::ExportLogsServiceRequest;
+use opentelemetry_proto::tonic::common::v1::AnyValue;
+use opentelemetry_proto::tonic::common::v1::any_value::Value;
 use snafu::{OptionExt, ResultExt, ensure};
 
 use crate::arrays::{
@@ -16,9 +19,6 @@ use crate::error::{self, Error, Result};
 use crate::otlp::common::{ResourceArrays, ScopeArrays};
 use crate::otlp::logs::related_data::RelatedData;
 use crate::otlp::metrics::AppendAndGet;
-use crate::proto::opentelemetry::collector::logs::v1::ExportLogsServiceRequest;
-use crate::proto::opentelemetry::common::v1::AnyValue;
-use crate::proto::opentelemetry::common::v1::any_value::Value;
 use crate::schema::consts;
 
 use super::attributes::{cbor, store::AttributeValueType};
@@ -263,22 +263,28 @@ pub fn logs_from(
             logs_arrays.observed_time_unix_nano.value_at_or_default(idx) as u64;
 
         if let Some(trace_id_bytes) = logs_arrays.trace_id.value_at(idx) {
-            ensure!(trace_id_bytes.len() == 16, error::InvalidTraceIdSnafu {
-                message: format!(
-                    "log_id = {}, index = {}, trace_id = {:?}",
-                    log_id, idx, trace_id_bytes
-                ),
-            });
+            ensure!(
+                trace_id_bytes.len() == 16,
+                error::InvalidTraceIdSnafu {
+                    message: format!(
+                        "log_id = {}, index = {}, trace_id = {:?}",
+                        log_id, idx, trace_id_bytes
+                    ),
+                }
+            );
             current_log_record.trace_id = trace_id_bytes
         }
 
         if let Some(span_id_bytes) = logs_arrays.span_id.value_at(idx) {
-            ensure!(span_id_bytes.len() == 8, error::InvalidSpanIdSnafu {
-                message: format!(
-                    "log_id = {}, index = {}, span_id = {:?}",
-                    log_id, idx, span_id_bytes
-                ),
-            });
+            ensure!(
+                span_id_bytes.len() == 8,
+                error::InvalidSpanIdSnafu {
+                    message: format!(
+                        "log_id = {}, index = {}, span_id = {:?}",
+                        log_id, idx, span_id_bytes
+                    ),
+                }
+            );
             current_log_record.span_id = span_id_bytes;
         }
 
